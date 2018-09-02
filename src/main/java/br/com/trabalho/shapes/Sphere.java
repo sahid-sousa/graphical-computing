@@ -10,17 +10,20 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GL2;
+import java.awt.Color;
 
-/**
- *
- * @author andrecunhas
- */
+
 public class Sphere implements IShape {
 
     private int speed = 0;
     private float rtri = 0.0f;
     private int texture;
-
+    private float blue = 1;
+    private float green = 1;
+    private float red = 1;
+    private boolean flag = true; // true: color; false: texture
+    
+    
     public void init(GLAutoDrawable drawable) {
         final GL2 gl = drawable.getGL().getGL2();
         float ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -33,10 +36,12 @@ public class Sphere implements IShape {
 
         gl.glEnable(GL.GL_DEPTH_TEST);
         gl.glDepthFunc(GL.GL_LESS);
-
+        
+        
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, ambient, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, diffuse, 0);
         gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, position, 0);
+        
 
         gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, lmodel_ambient, 0);
         gl.glLightModelfv(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, local_view, 0);
@@ -56,10 +61,7 @@ public class Sphere implements IShape {
         this.speed = speed;
     }
 
-    @Override
-    public void setTexture(int texture) {
-        this.texture = texture;
-    }
+  
 
     @Override
     public void draw(GL2 gl) {
@@ -68,7 +70,11 @@ public class Sphere implements IShape {
         gl.glTranslatef(-0.5f, 0.0f, -6.0f); // Move the sphere
         gl.glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
-        gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+        if(flag){
+            gl.glColor3f( red, green, blue); // Color
+        }else{
+            gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+        }
         GLUT glut = new GLUT();
         float no_mat[] = {0.0f, 0.0f, 0.0f, 1.0f};
         float mat_ambient[] = {0.7f, 0.7f, 0.7f, 0.2f, 1.0f};
@@ -89,5 +95,24 @@ public class Sphere implements IShape {
         glut.glutSolidSphere(2f, 50, 50);
         gl.glPopMatrix();
         rtri += speed;
+    }
+    
+    @Override
+    public void setTexture(int texture) {
+        this.texture = texture;
+        this.flag = false;
+    }
+    
+    @Override
+    public void setColor(Color color) {
+        try {
+            this.red = color.getRed()/255;
+            this.green = color.getGreen()/255;
+            this.blue = color.getBlue()/255;
+            this.flag = true;
+            
+        } catch (Exception e) {
+        }
+
     }
 }

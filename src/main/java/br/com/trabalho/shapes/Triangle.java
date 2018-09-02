@@ -7,17 +7,19 @@ package br.com.trabalho.shapes;
 
 import br.com.trabalho.interfaces.IShape;
 import com.jogamp.opengl.GL2;
+import java.awt.Color;
 
-/**
- *
- * @author andrecunhas
- */
+
 public class Triangle implements IShape {
 
     private int speed = 0;
     private float rtri = 0.0f;
     private int texture;
-
+    private float blue = 1;
+    private float green = 1;
+    private float red = 1;
+    private boolean flag = true; // true: color; false: texture
+    
     @Override
     public void draw(GL2 gl) {
         gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -25,7 +27,11 @@ public class Triangle implements IShape {
         gl.glTranslatef(-0.5f, 0.0f, -6.0f); // Move the triangle
         gl.glRotatef(rtri, 0.0f, 1.0f, 0.0f);
 
-        gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+        if(!flag){
+            gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+        }else{
+            gl.glColor3f( red, green, blue); // Color
+        }
 
         gl.glBegin(GL2.GL_TRIANGLES);
 
@@ -75,5 +81,19 @@ public class Triangle implements IShape {
     @Override
     public void setTexture(int texture) {
         this.texture = texture;
+        this.flag = false;
+    }
+    
+     @Override
+    public void setColor(Color color) {
+        try {
+            this.red = color.getRed()/255;
+            this.green = color.getGreen()/255;
+            this.blue = color.getBlue()/255;
+            this.flag = true;
+            
+        } catch (Exception e) {
+        }
+
     }
 }

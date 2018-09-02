@@ -19,6 +19,8 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.glu.GLU;
+import com.jogamp.opengl.util.awt.TextRenderer;
+import javafx.scene.text.Text;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,15 +45,15 @@ public class ShapesMain extends JFrame implements GLEventListener {
     private JRadioButton backgroundRb;
     private JRadioButton reflectionRb;
 
-    private Color color;
-
+    private Color color = null;
+    
     public ShapesMain() {
         super("OpenGl 2D - Java 2D com opengl Jogl");
     }
     JRadioButton triangRb;
     JRadioButton cubeRb;
     JRadioButton sphereRb;
-
+    
     static Texture t;
 
     public void start() {
@@ -86,28 +88,31 @@ public class ShapesMain extends JFrame implements GLEventListener {
         choosecolor.addActionListener((ActionEvent e) -> {
 
             color = JColorChooser.showDialog(this, "Select a color", Color.RED);
+            System.out.println("Color selected");
+            System.out.println(color);
+            texture = 0;
         });
 
         RadioButtonHandler handler = new RadioButtonHandler();
         triangRb = new JRadioButton("Triangle", false);
         cubeRb = new JRadioButton("Cube", false);
         sphereRb = new JRadioButton("Sphere", false);
-
-        // Implemente alguma das funcionalidades abaixo
+        
+         // Implemente alguma das funcionalidades abaixo
         //https://www3.ntu.edu.sg/home/ehchua/programming/opengl/JOGL2.0.html
-        textRb = new JRadioButton("Text", false);
-        particlesRb = new JRadioButton("Particles", false);
-        backgroundRb = new JRadioButton("Background", false);
-        reflectionRb = new JRadioButton("Reflection", false);
+//        textRb = new JRadioButton("Text", false);
+//        particlesRb = new JRadioButton("Particles", false);
+//        backgroundRb = new JRadioButton("Background", false);
+//        reflectionRb = new JRadioButton("Reflection", false);
 
         triangRb.addItemListener(handler);
         cubeRb.addItemListener(handler);
         sphereRb.addItemListener(handler);
-        textRb.addItemListener(handler);
-        particlesRb.addItemListener(handler);
-        backgroundRb.addItemListener(handler);
-        reflectionRb.addItemListener(handler);
-
+//        textRb.addItemListener(handler);
+//        particlesRb.addItemListener(handler);
+//        backgroundRb.addItemListener(handler);
+//        reflectionRb.addItemListener(handler);
+        
         JPanel radiobuttonPanel = new JPanel();
 
         radiobuttonPanel.setLayout(new BoxLayout(radiobuttonPanel, BoxLayout.Y_AXIS));
@@ -115,10 +120,10 @@ public class ShapesMain extends JFrame implements GLEventListener {
         radiobuttonPanel.add(triangRb);
         radiobuttonPanel.add(cubeRb);
         radiobuttonPanel.add(sphereRb);
-        radiobuttonPanel.add(textRb);
-        radiobuttonPanel.add(particlesRb);
-        radiobuttonPanel.add(backgroundRb);
-        radiobuttonPanel.add(reflectionRb);
+//        radiobuttonPanel.add(textRb);
+//        radiobuttonPanel.add(particlesRb);
+//        radiobuttonPanel.add(backgroundRb);
+//        radiobuttonPanel.add(reflectionRb);
 
         JCheckBox cb = new JCheckBox("Triangle");
 
@@ -159,10 +164,11 @@ public class ShapesMain extends JFrame implements GLEventListener {
         setSize(800, 600);
         setVisible(true);
     }
+    private TextRenderer textRenderer;
 
     @Override
     public void init(GLAutoDrawable drawable) {
-
+        
     }
 
     @Override
@@ -182,7 +188,12 @@ public class ShapesMain extends JFrame implements GLEventListener {
 
         if (shape != null) {
             shape.setSpeed(rspeed);
-            shape.setTexture(texture);
+            if(texture != 0){
+                shape.setTexture(texture);
+            }
+            if(color != null){
+                shape.setColor(color);
+            }
             drawShape(shape, gl);
 
         } else {
@@ -195,7 +206,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
         gl.glEnable(GL2.GL_DEPTH_TEST);
         gl.glDepthFunc(GL2.GL_LEQUAL);
         gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-
+        
         //
         gl.glEnable(GL2.GL_TEXTURE_2D);
         try {
@@ -204,6 +215,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
                 if (t == null) {
                     t = TextureIO.newTexture(im, false);
                     texture = t.getTextureObject(gl);
+                    color = null;
                 }
             }
         } catch (IOException e) {
@@ -240,15 +252,34 @@ public class ShapesMain extends JFrame implements GLEventListener {
 
         @Override
         public void itemStateChanged(ItemEvent e) {
-            if (triangRb.isSelected()) {
-                shape = new Triangle();
-            } else if (sphereRb.isSelected()) {
-                shape = new Sphere();
-            } else if (cubeRb.isSelected()) {
-                shape = new Cube();
-            } else {
+            if(e.getStateChange() == 1){
+                if (e.getItemSelectable() == triangRb) {
+                    sphereRb.setSelected(false);
+                    cubeRb.setSelected(false);
+                    shape = new Triangle();
+                    triangRb.setSelected(true);
+                }
+            
+                if (e.getItemSelectable() == sphereRb) {
+                    triangRb.setSelected(false);
+                    cubeRb.setSelected(false);
+                    shape = new Sphere();
+                    sphereRb.setSelected(true);
+                }
+            
+                if (e.getItemSelectable() == cubeRb) {
+                    triangRb.setSelected(false);
+                    sphereRb.setSelected(false);
+                    shape = new Cube();
+                    cubeRb.setSelected(true);
+                }
+                
+            }else{
+                triangRb.setSelected(false);
+                sphereRb.setSelected(false);
+                cubeRb.setSelected(false);
                 shape = null;
-            }
+            }      
         }
     }
 }

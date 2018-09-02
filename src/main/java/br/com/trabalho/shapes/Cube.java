@@ -12,6 +12,7 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES1;
 import com.jogamp.opengl.fixedfunc.GLLightingFunc;
 import com.jogamp.opengl.glu.GLU;
+import java.awt.Color;
 
 public class Cube implements IShape {
 
@@ -19,6 +20,10 @@ public class Cube implements IShape {
     private float rtri = 0.0f;
     private int texture;
     private float angleCube = 0;
+    private float blue = 1;
+    private float green = 1;
+    private float red = 1;
+    private boolean flag = true; // true: color; false: texture
 
     @Override
     public void draw(GL2 gl) {
@@ -26,7 +31,11 @@ public class Cube implements IShape {
         gl.glLoadIdentity(); // Reset The View
         gl.glTranslatef(-0.5f, 0.0f, -6.0f); // Move the cube
         gl.glRotatef(rtri, 0.0f, 1.0f, 0.0f);
-        gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+        if(!flag){
+            gl.glBindTexture(GL2.GL_TEXTURE_2D, texture);
+        }else{
+            gl.glColor3f( red, green, blue); // Color
+        }
 
         gl.glLoadIdentity();                // redefine a matriz atual da vista do modelo 
 
@@ -99,9 +108,19 @@ public class Cube implements IShape {
     @Override
     public void setTexture(int texture) {
         this.texture = texture;
+        this.flag = false;
     }
-
-    private void glColor3f(float f, float f0, float f1) {
+    
+    @Override
+    public void setColor(Color color) {
+        try {
+            this.red = color.getRed()/255;
+            this.green = color.getGreen()/255;
+            this.blue = color.getBlue()/255;
+            this.flag = true;
+            
+        } catch (Exception e) {
+        }
 
     }
 }
