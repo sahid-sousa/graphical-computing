@@ -46,6 +46,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
     private JRadioButton reflectionRb;
 
     private Color color = null;
+    private Color colorbg = Color.DARK_GRAY;
     
     public ShapesMain() {
         super("OpenGl 2D - Java 2D com opengl Jogl");
@@ -58,7 +59,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
 
     public void start() {
         GLCanvas canvas = new GLCanvas();
-
+        
         final FPSAnimator animator = new FPSAnimator(canvas, 60, true);
         animator.start();
         canvas.addGLEventListener(this);
@@ -84,6 +85,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
         });
 
         JButton choosecolor = new JButton("Choose Color");
+        JButton choosebg = new JButton("Choose Color Background");
 
         choosecolor.addActionListener((ActionEvent e) -> {
 
@@ -92,14 +94,21 @@ public class ShapesMain extends JFrame implements GLEventListener {
             System.out.println(color);
             texture = 0;
         });
+        
+        choosebg.addActionListener((ActionEvent e) -> {
+            colorbg = JColorChooser.showDialog(this, "Select a color", Color.RED);
+            System.out.println("Color bg selected");
+            System.out.println(colorbg);
+            texture = 0;
+        });
 
         RadioButtonHandler handler = new RadioButtonHandler();
         triangRb = new JRadioButton("Triangle", false);
         cubeRb = new JRadioButton("Cube", false);
         sphereRb = new JRadioButton("Sphere", false);
         
-         // Implemente alguma das funcionalidades abaixo
-        //https://www3.ntu.edu.sg/home/ehchua/programming/opengl/JOGL2.0.html
+// Implemente alguma das funcionalidades abaixo
+//https://www3.ntu.edu.sg/home/ehchua/programming/opengl/JOGL2.0.html
 //        textRb = new JRadioButton("Text", false);
 //        particlesRb = new JRadioButton("Particles", false);
 //        backgroundRb = new JRadioButton("Background", false);
@@ -148,6 +157,10 @@ public class ShapesMain extends JFrame implements GLEventListener {
         jp.add(new JLabel("Choose Color"));
         jp.add(choosecolor);
         jp.add(new JLabel("--------------------------------"));
+        
+        jp.add(new JLabel("Choose Color BG"));
+        jp.add(choosebg);
+        jp.add(new JLabel("--------------------------------"));
 
         jp.add(new JLabel("Choose Speed"));
         jp.add(speedSlider);
@@ -158,6 +171,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
 
         add(jp, BorderLayout.WEST);
         // janela.add(jb,BorderLayout.WEST);
+        canvas.setBackground(Color.BLUE);
         add(canvas, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -185,7 +199,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
     @Override
     public void display(GLAutoDrawable drawable) {
         final GL2 gl = drawable.getGL().getGL2();
-
+        System.out.println("teste");
         if (shape != null) {
             shape.setSpeed(rspeed);
             if(texture != 0){
@@ -201,7 +215,7 @@ public class ShapesMain extends JFrame implements GLEventListener {
         }
 
         gl.glShadeModel(GL2.GL_SMOOTH);
-        gl.glClearColor(0f, 0f, 0f, 0f);
+        gl.glClearColor((float)colorbg.getRed()/255, (float)colorbg.getGreen()/255, (float)colorbg.getBlue()/255, 0f);
         gl.glClearDepth(1.0f);
         gl.glEnable(GL2.GL_DEPTH_TEST);
         gl.glDepthFunc(GL2.GL_LEQUAL);
