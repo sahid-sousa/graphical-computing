@@ -87,9 +87,9 @@ public class Triangle implements IShape {
      @Override
     public void setColor(Color color) {
         try {
-            this.red = color.getRed()/255;
-            this.green = color.getGreen()/255;
-            this.blue = color.getBlue()/255;
+            this.red = (float) color.getRed()/255;
+            this.green = (float) color.getGreen()/255;
+            this.blue = (float) color.getBlue()/255;
             this.flag = true;
             
         } catch (Exception e) {
